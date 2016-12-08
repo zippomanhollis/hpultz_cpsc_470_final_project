@@ -4,7 +4,9 @@
   "description": "A Slack Botkit bot, running on Kubernetes.",
   "main": "demo_bot.js",
   "dependencies": {
-    "botkit": "0.0.5"
+    "@google-cloud/translate": "^0.5.1",
+    "botkit": "0.0.5",
+    "node-google-translate-skidz": "^1.1.0"
   },
   "devDependencies": {},
   "scripts": {
@@ -12,8 +14,8 @@
   },
   "author": "Google Inc.",
   "license": "Apache-2.0",
-  "repository" : {
-    "type" : "git",
-    "url" : "https://github.com/GoogleCloudPlatform/slack-samples.git"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GoogleCloudPlatform/slack-samples.git"
   }
 }

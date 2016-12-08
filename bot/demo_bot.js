@@ -47,9 +47,23 @@ This is a sample Slack bot built with Botkit.
 */
 
 var Botkit = require('botkit');
+//var fortune = require('node-fortune');
 var fs = require('fs');
+var translate = require('@google-cloud/translate')({
+    projectId: 'lucid-splicer-149022',
+    key : 'AIzaSyD0gWhXPzF_pvGljpDbxI1oJmOvAupnt_8'
+//    keyFilename: '/home/megruen/slack-samples/bot/google_translate_key.json'
+});
+// http://nodejs.org/api.html#_child_processes
+var sys = require('sys');
+var exec = require('child_process').exec;
+var child;
 
-var controller = Botkit.slackbot({debug: false});
+
+var controller = Botkit.slackbot({
+    debug: false,
+    stats_optout: true
+});
 
 if (!process.env.slack_token_path) {
   console.log('Error: Specify slack_token_path in environment');
@@ -72,4 +86,110 @@ fs.readFile(process.env.slack_token_path, (err, data) => {
 
 controller.hears(
     ['hello', 'hi'], ['direct_message', 'direct_mention', 'mention'],
-    function(bot, message) { bot.reply(message, "Hello."); });
+    function(bot, message) { 
+        bot.reply(message, "Hello, my name is Mr. Kitty."); 
+    });
+
+controller.hears(
+    ['help'], ['direct_message', 'direct_mention', 'mention'],
+    function(bot, message) { 
+        var text = "~~~~~~~~HELP~~~~~~~~\n" + 
+                   "Available commands requiring mentions:\n" +
+                   " -> help\n      display this help screen\n" +
+                   " -> hi (or) hello\n      display friendly greeting\n" +
+                   " -> I dont feel good (or) I feel sick\n      display warm desire for better health\n" +
+                   " -> inspire me\n      display inspirational messages from Mr. Kitty's favorite program\n" +
+                   " -> languages\n      display a list of the languages Mr.Kitty is fluent in\n" +
+                   "Available commands NOT requiring mentions:\n" +
+                   " -> span me <message>\n      translate message from english to spanish\n" +
+                   " -> translate -inlang <in-language code> -outlang <out-language code> -message <message>\n" +
+                   "    translate message from in-language to out-language\n";
+        bot.reply(message, text); 
+    });
+
+controller.hears(
+    ['I dont feel good', 'I feel sick', 'kill me, kill me now'], ['direct_message', 'direct_mention', 'mention'],
+    function(bot, message) { 
+        bot.reply(message, "Ahhh, I hope you feel better soon."); 
+    });
+
+controller.hears(
+    ['inspire me'], ['direct_message', 'direct_mention', 'mention'],
+    function(bot, message) { 
+        // executes `pwd`
+        child = exec("/usr/games/fortune", function (error, stdout, stderr) {
+            sys.print('stdout: ' + stdout);
+            bot.reply(message, stdout); 
+            bot.reply(message, stderr); 
+            if (error !== null) {
+                console.log('exec error: ' + error);
+            }
+        });
+    });
+
+controller.hears(
+    ['languages'], ['direct_message', 'direct_mention', 'mention'],
+    function(bot, message) { 
+        translate.getLanguages('en', function(err, languages) {
+            var list = '';
+            languages.forEach((language) => list += language.name + ": " + language.code + "\n");
+            if (!err) {
+                bot.reply(message, list);
+            }
+        });
+    });
+
+controller.hears(
+    ['^span me.*$'], ['ambient', 'direct_message', 'direct_mention', 'mention'],
+    function(bot, message) { 
+        var text = message.text.replace("span me ", "");
+//        var text = 'hello'
+        var options = {
+            from: 'en',
+            to: 'es'
+        };
+        translate.translate(text, options, function(err, translation) {
+            if (!err) {
+                // translation = 'Hola'
+                bot.reply(message, "\"" +
+                        message.text.replace("span me ", "") +
+                        "\" in spanish is \"" + translation + "\"");  
+            }
+            if (err) {
+                bot.reply(message, "there was a problem" + err);  
+            }
+        });
+    });
+
+controller.hears(
+    ['^translate -inlang (.*) -outlang (.*) -message (.*)$'], ['ambient', 'direct_message', 'direct_mention', 'mention'],
+    function(bot, message) { 
+        var text = message.text.match(/.*message (.*)$/)[1];
+//        bot.reply(message, "your message was " + text);  
+        var inLang = message.text.match(/.*inlang (\S*)\b/)[1];
+//        bot.reply(message, "your inLang was " + inLang);  
+        var outLang = message.text.match(/.*outlang (\S*)\b/)[1];
+//        bot.reply(message, "your outLang was " + outLang);  
+        var options = {
+            from: inLang,
+            to: outLang
+        };
+        translate.translate(text, options, function(err, translation) {
+            if (!err) {
+                // translation = 'Hola'
+                bot.reply(message, "\"" + text +
+                        "\" in " + outLang + " is \"" + translation + "\"");  
+            }
+            if (err) {
+                bot.reply(message, "there was a problem" + err);  
+            }
+        });
+    });
+
+
+
+
+
+
+
+

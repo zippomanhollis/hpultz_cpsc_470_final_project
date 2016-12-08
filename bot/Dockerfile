@@ -18,6 +18,7 @@ FROM node:5.4
 COPY package.json /src/package.json
 WORKDIR /src
 RUN npm install
+RUN apt-get -y update && apt-get install -y fortunes
 
 # Bundle app source.
 COPY demo_bot.js /src
