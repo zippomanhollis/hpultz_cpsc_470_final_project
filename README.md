@@ -1,10 +1,7 @@
-# Hosting Slack Integrations on Google Cloud Platform
+# Hosting Mr. Kitty ChatCat and LangBot on Google Cloud Services
 
-This repository holds samples for how to run different kinds of [Slack][slack]
-[integrations][slack-api] on [Google Cloud Platform][google-cloud].
 
-[![Build Status][travis-status-img]][travis-status]
-
+*resources used from the original cloned repository*
 [google-cloud]: https://cloud.google.com/
 [slack]: https://slack.com
 [slack-api]: https://api.slack.com/
@@ -12,34 +9,13 @@ This repository holds samples for how to run different kinds of [Slack][slack]
 [travis-status-img]: https://travis-ci.org/GoogleCloudPlatform/slack-samples.svg
 
 
-## Slack Integration Samples
+## Bot Users
 
-### Incoming Webhooks
-
-- [Send a Notification to Slack for SSH Logins on Google Compute Engine](notify)
-
-
-### Bot Users
-
-- [Hosting a Botkit Bot on Google Container Engine](bot)
-
-
-### Slash Commands
-
-- [Hosting a Slash Command on Google App Engine - Part 1 - Custom
-  Integration](command/1-custom-integration)
-- [Hosting a Slash Command on Google App Engine - Part 2 - Slack
-  App](command/2-app)
-
-
-## Contributing changes
-
-- See [CONTRIBUTING.md](CONTRIBUTING.md).
-
-
-## Licensing
-
-- See [LICENSE](LICENSE).
+* Mr. Kitty
+    * bot to run various commands
+    * the code for Mr. Kitty is in bot/demo\_bot.js
+    * the DockerFile has been modified to include fortune in the container
+    * rebooter.sh has been added to automate bot build and deployment
 
 
 ## Disclaimer
